@@ -1,4 +1,3 @@
-from os import link
 from django.db import models
 
 class AssetSource(models.Model):
@@ -7,19 +6,20 @@ class AssetSource(models.Model):
         JSON = 'JSON',
         SCRAPE = 'SCRP'
 
-    name: models.CharField(max_length=200)
-    type: models.CharField(
+    title = models.CharField(max_length=200)
+    type = models.CharField(
         max_length=4, 
         choices=SourceTypes.choices, 
         default=SourceTypes.JSON
     )
+    post_title = models.CharField(max_length=200)
     url = models.CharField(max_length=1000)
 
 
 class Asset(models.Model):
     title = models.CharField(max_length=200)
-    description = models.CharField(max_length=1000),
-    link = models.CharField(max_length=1000),
+    description = models.CharField(max_length=1000)
+    link = models.CharField(max_length=1000)
     time_stamp = models.DateTimeField()
     sent = models.BooleanField()
     source = models.ForeignKey(AssetSource, on_delete=models.CASCADE)

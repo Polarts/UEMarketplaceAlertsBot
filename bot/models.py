@@ -57,3 +57,7 @@ class LogEntry(models.Model):
     source = models.CharField(max_length=200)
     type = models.IntegerField(choices=LogEntryTypes.choices)
     text = models.CharField(max_length=1000)
+
+    def __str__(self):
+        time_formatted = self.time_stamp.strftime("%Y-%m-%d %H:%M:%S")
+        return f"[{time_formatted}] {self.source} | {self.type} | {self.text}"

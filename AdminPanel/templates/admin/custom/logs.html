@@ -1,0 +1,79 @@
+<style>
+    #logs-list details summary {
+        list-style: none;
+        position: relative;
+    }
+    #logs-list details summary h2::before {
+        content: '⯈ '
+    }
+    #logs-list details[open] h2::before {
+        content: '⯆ ';
+    }
+    #logs-list details summary a {
+        position: absolute;
+        right: 15px;
+        top: 7px;
+        cursor: pointer;
+    }
+    #logs-container {
+        max-height: 300px; 
+        display: flex; 
+        flex-direction: column; 
+        overflow: scroll;
+    }
+    .log-row {
+        border-bottom: 1px solid var(--hairline-color);
+        padding: 3px 0;
+    }
+    .log-row:nth-child(even) {
+        background: var(--darkened-bg);
+    }
+</style>
+
+
+<div id="logs-list">
+    <details class="module">
+        <summary>
+            <h2 id="logs-header">LOGS (0)</h2>
+            <a id="clear-logs-link">🚮 Clear Logs</a>
+        </summary>
+        <div id="logs-container">
+    
+        </div>
+    </details>
+</div>
+<script>
+
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    function wrapRow(row) {
+        return `<span class="log-row">${row}</span>`
+    }
+
+    fetch("{% url 'bot:logs' %}").then(r => r.json()).then(json => {
+        if (json.logs.length > 0) {
+            const logsList = document.getElementById('logs-container')
+            logsList.innerHTML = json.logs.reduce((accum, current) => {
+                if (!accum.includes('<span')) 
+                    accum = wrapRow(accum)
+                return accum + wrapRow(current)
+            })
+            document.getElementById('logs-header').innerText = `LOGS (${json.logs.length})`
+        }
+    })
+
+    document.getElementById('clear-logs-link').onclick = () => {
+        fetch("{% url 'bot:logs' %}", {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': csrftoken
+            }
+        }).then(response => {
+            if (response.status === 200) {
+                document.getElementById('logs-header').innerText = `LOGS (0)`
+                document.getElementById('logs-container').innerHTML = ''
+            }
+        })
+    }
+    
+</script>

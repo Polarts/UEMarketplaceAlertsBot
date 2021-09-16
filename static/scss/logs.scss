@@ -20,27 +20,27 @@
             content: '⯆ ';
         }
     }
-}
 
-#logs-container {
-    max-height: 300px; 
-    display: flex; 
-    flex-direction: column; 
-    overflow: scroll;
-
-    .log-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr 0.3fr 2fr;
-
-        border-bottom: 1px solid var(--hairline-color);
-        padding: 3px 0;
-
-        &:nth-child(even) {
-            background: var(--darkened-bg);
-        }
-
-        span {
-            align-self: center;
+    &__data {
+        max-height: 300px; 
+        display: flex; 
+        flex-direction: column; 
+        overflow: scroll;
+    
+        .log-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 0.3fr 2fr;
+    
+            border-bottom: 1px solid var(--hairline-color);
+            padding: 3px 0;
+    
+            &:nth-child(even) {
+                background: var(--darkened-bg);
+            }
+    
+            span {
+                align-self: center;
+            }
         }
     }
 }

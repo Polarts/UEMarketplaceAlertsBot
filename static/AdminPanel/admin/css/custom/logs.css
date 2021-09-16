@@ -19,7 +19,7 @@
   content: '⯆ ';
 }
 
-#logs-container {
+#logs-list__data {
   max-height: 300px;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -31,7 +31,7 @@
   overflow: scroll;
 }
 
-#logs-container .log-row {
+#logs-list__data .log-row {
   display: -ms-grid;
   display: grid;
   -ms-grid-columns: 1fr 1fr 0.3fr 2fr;
@@ -40,11 +40,11 @@
   padding: 3px 0;
 }
 
-#logs-container .log-row:nth-child(even) {
+#logs-list__data .log-row:nth-child(even) {
   background: var(--darkened-bg);
 }
 
-#logs-container .log-row span {
+#logs-list__data .log-row span {
   -ms-flex-item-align: center;
       -ms-grid-row-align: center;
       align-self: center;

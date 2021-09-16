@@ -1,15 +1,18 @@
 <div id="logs-list">
     <details class="module">
         <summary>
-            <h2 id="logs-header">LOGS (0)</h2>
+            <h2 id="logs-list__header">LOGS (0)</h2>
             <a id="clear-logs-link">🚮 Clear Logs</a>
         </summary>
-        <div id="logs-container">
+        <div id="logs-list__data">
     
         </div>
     </details>
 </div>
 <script>
+
+    const logsContainer = find('#logs-list__data')
+    const logsHeader = find('#logs-list__header')
 
     function wrapRow(row) {
         return make(
@@ -23,11 +26,10 @@
 
     fetch("{% url 'bot:logs' %}").then(r => r.json()).then(json => {
         if (json.logs.length > 0) {
-            const logsList = find('#logs-container')
-            logsList.innerHTML = json.logs.reduce(
+            logsContainer.innerHTML = json.logs.reduce(
                 (accum, current) => accum + wrapRow(current), ''
             )
-            find('#logs-header').innerText = `LOGS (${json.logs.length})`
+            logsHeader.innerText = `LOGS (${json.logs.length})`
         }
     })
 
@@ -39,8 +41,8 @@
             }
         }).then(response => {
             if (response.status === 200) {
-                find('#logs-header').innerText = `LOGS (0)`
-                find('#logs-container').innerHTML = ''
+                logsHeader.innerText = `LOGS (0)`
+                logsContainer.innerHTML = ''
             }
         })
     }

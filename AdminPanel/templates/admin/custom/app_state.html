@@ -42,7 +42,7 @@
         const prevState = playToggle.checked
         const newState = playToggle.checked? 'PLAY' : 'STOP'
         console.log(newState)
-        fetch(`/bot/state/${newState}`, {
+        fetch(`{% url 'bot:state' %}${newState}`, {
             method: 'POST',
             headers: {
                 'X-CSRFToken': CSRF_TOKEN

@@ -43,6 +43,8 @@
             if (response.status === 200) {
                 logsHeader.innerText = `LOGS (0)`
                 logsContainer.innerHTML = ''
+            } else {
+                logsHeader.innerText += ' --- ERROR CLEARING LOGS'
             }
         })
     }

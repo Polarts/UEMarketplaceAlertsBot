@@ -1,0 +1,68 @@
+#app-state__header {
+  position: relative;
+}
+
+#app-state__data {
+  position: relative;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding: 10px;
+  gap: 5px;
+}
+
+#play-state-toggle-container {
+  position: absolute;
+  right: 15px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 10px;
+}
+
+input.switch {
+  height: 0;
+  width: 0;
+  visibility: hidden;
+  display: none;
+}
+
+input.switch:checked + label.switch {
+  background-color: var(--header-bg);
+}
+
+input.switch:checked + label.switch:after {
+  left: 100%;
+  -webkit-transform: translateX(-100%);
+          transform: translateX(-100%);
+}
+
+label.switch {
+  cursor: pointer;
+  text-indent: -9999px;
+  width: 30px;
+  height: 15px;
+  background: var(--close-button-bg);
+  display: block;
+  border-radius: 100px;
+  position: relative;
+}
+
+label.switch:after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 14px;
+  height: 15px;
+  background: var(--accent);
+  border-radius: 90px;
+  -webkit-transition: 0.3s;
+  transition: 0.3s;
+}
+
+label.switch:active:after {
+  width: 22px;
+}

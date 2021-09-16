@@ -15,6 +15,9 @@ class AssetSource(models.Model):
     post_title = models.CharField(max_length=200)
     url = models.CharField(max_length=1000)
 
+    def __str__(self):
+        return f"{self.title} | {self.type}"
+
 
 class Asset(models.Model):
     title = models.CharField(max_length=200)
@@ -23,6 +26,9 @@ class Asset(models.Model):
     time_stamp = models.DateTimeField()
     sent = models.BooleanField()
     source = models.ForeignKey(AssetSource, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.title} | {('sent' if self.sent else 'unsent')}"
 
 class AppState(models.Model):
     
@@ -46,6 +52,12 @@ class AppState(models.Model):
         default=HealthStates.PENDING
     )
 
+    def to_dict(self):
+        return {
+            'play_state': self.play_state,
+            'health_state': self.health_state
+        }
+
 class LogEntry(models.Model):
 
     class LogEntryTypes(models.IntegerChoices):
@@ -58,6 +70,23 @@ class LogEntry(models.Model):
     type = models.IntegerField(choices=LogEntryTypes.choices)
     text = models.CharField(max_length=1000)
 
+    def get_type_string(self):
+        return {
+            0: 'LOG',
+            1: 'WARN',
+            2: 'ERR'
+        }[self.type]
+
+    def get_formatter_time_stamp(self):
+        return self.time_stamp.strftime("%Y-%m-%d %H:%M:%S")
+
     def __str__(self):
-        time_formatted = self.time_stamp.strftime("%Y-%m-%d %H:%M:%S")
-        return f"[{time_formatted}] {self.source} | {self.type} | {self.text}"
+        return f"[{self.get_formatter_time_stamp()}] {self.source} | {self.get_type_string()} | {self.text}"
+
+    def to_dict(self):
+        return {
+            'time_stamp': self.get_formatter_time_stamp(),
+            'source': self.source,
+            'type': self.get_type_string(),
+            'text': self.text
+        }

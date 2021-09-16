@@ -1,0 +1,10 @@
+{
+    "liveSassCompile.settings.formats": [
+        {
+            "format": "expanded",
+            "extensionName": ".css",
+            "savePath": "/static/AdminPanel/admin/css/custom"
+        }
+    ],
+    "liveSassCompile.settings.generateMap": false
+}

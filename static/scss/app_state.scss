@@ -1,0 +1,63 @@
+#app-state {
+    &__header {
+        position: relative;
+        
+    }
+
+    &__data {
+        position: relative;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        gap: 5px;
+    }
+}
+
+#play-state-toggle-container {
+    position: absolute;
+    right: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+input.switch{
+    height: 0;
+    width: 0;
+    visibility: hidden;
+    display: none;
+
+    &:checked + label.switch {
+        background-color: var(--header-bg);
+    }
+
+    &:checked + label.switch:after {
+        left: 100%;
+        transform: translateX(-100%);
+    }
+}
+
+label.switch {
+    cursor: pointer;
+    text-indent: -9999px;
+    width: 30px;
+    height: 15px;
+    background: var(--close-button-bg);
+    display: block;
+    border-radius: 100px;
+    position: relative;
+
+    &:after {
+        content: '';
+        position: absolute;
+        left: 0;
+        width: 14px;
+        height: 15px;
+        background: var(--accent);
+        border-radius: 90px;
+        transition: 0.3s;
+    }
+
+    &:active:after {
+        width: 22px;
+    }
+}

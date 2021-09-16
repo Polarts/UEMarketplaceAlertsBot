@@ -1,7 +1,17 @@
 {% extends "admin/base_site.html" %}
 {% load i18n static %}
 
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}">{% endblock %}
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/css/custom/logs.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/css/custom/app_state.css' %}">
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script src="{% static 'admin/js/my-utils.js' %}"></script>
+{% endblock %}
 
 {% block coltype %}colMS{% endblock %}
 
@@ -11,15 +21,23 @@
 
 {% block nav-sidebar %}{% endblock %}
 
+{% block content_title %}
+    <h1>Bot Administration</h1>
+{% endblock %}
+
 {% block content %}
 
 {% csrf_token %}
+<script>
+    const CSRF_TOKEN = find('[name=csrfmiddlewaretoken]').value;
+</script>
 
 <div id="content-main">
-    <!-- INSERT CUSTOM CODE HERE -->
+    {% include "admin/custom/app_state.html" %}
     {% include "admin/custom/logs.html" %}
     {% include "admin/app_list.html" with app_list=app_list show_changelinks=True %}
 </div>
+
 {% endblock %}
 
 {% block sidebar %}

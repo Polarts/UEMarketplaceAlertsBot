@@ -1,0 +1,59 @@
+<div id="app-state" class="module">
+    <h2 id="app-state__header">
+        <span>APP STATE</span>
+    </h2>
+    <div id="app-state__data">
+        <span>Bot Health:</span>
+        <span id="bot-health-state" style="color: orange">PEND</span>
+        <div id="play-state-toggle-container">
+            <input type="checkbox" id="play-status-switch" class="switch"/>
+            <label for="play-status-switch" class="switch">Toggle</label>
+            <span id="bot-play-state">PEND</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    const stateToColor = {
+        GOOD: 'green',
+        BAD: 'red',
+        PEND: 'orange'
+    }
+
+    const healthState = find('#bot-health-state')
+    const playToggle = find('#play-status-switch')
+    const playState = find('#bot-play-state')
+
+    function fetchState() {
+        fetch("{% url 'bot:state' %}").then(data => data.json()).then(json => {
+            
+            healthState.style.color = stateToColor[json.health_state]
+            healthState.innerText = json.health_state
+    
+            playToggle.checked = json.play_state === 'PLAY'
+            playState.innerText = json.play_state
+        })
+    }
+
+    fetchState()
+
+    playToggle.onchange = e => {
+        playState.innerText = 'WAIT'
+        const prevState = playToggle.checked
+        const newState = playToggle.checked? 'PLAY' : 'STOP'
+        console.log(newState)
+        fetch(`/bot/state/${newState}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': CSRF_TOKEN
+            },
+        }).then(response => {
+            if (response.status === 200) {
+                fetchState()
+            } else {
+                playState.innerText = 'ERRR'
+                playToggle.checked = prevState
+            }
+        })   
+    }
+</script>

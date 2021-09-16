@@ -1,0 +1,51 @@
+@charset "UTF-8";
+#logs-list details summary {
+  list-style: none;
+  position: relative;
+}
+
+#logs-list details summary a {
+  position: absolute;
+  right: 15px;
+  top: 7px;
+  cursor: pointer;
+}
+
+#logs-list details h2::before {
+  content: '⯈ ';
+}
+
+#logs-list details[open] h2::before {
+  content: '⯆ ';
+}
+
+#logs-container {
+  max-height: 300px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  overflow: scroll;
+}
+
+#logs-container .log-row {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 1fr 1fr 0.3fr 2fr;
+      grid-template-columns: 1fr 1fr 0.3fr 2fr;
+  border-bottom: 1px solid var(--hairline-color);
+  padding: 3px 0;
+}
+
+#logs-container .log-row:nth-child(even) {
+  background: var(--darkened-bg);
+}
+
+#logs-container .log-row span {
+  -ms-flex-item-align: center;
+      -ms-grid-row-align: center;
+      align-self: center;
+}

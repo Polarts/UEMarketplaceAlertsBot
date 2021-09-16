@@ -1,5 +1,6 @@
 import functools
 import json
+from os import stat
 from typing import Sequence
 import requests
 import facebook
@@ -7,7 +8,7 @@ from datetime import datetime, timezone
 from bs4 import BeautifulSoup
 from django.utils import timezone
 
-from .models import AssetSource, Asset, LogEntry
+from .models import AppState, AssetSource, Asset, LogEntry
 
 BASE_URL = 'https://www.unrealengine.com'
 
@@ -18,6 +19,14 @@ def append_log(source, type, text):
         type=type,
         text=text
     ).save()
+
+    status = AppState.objects.get(pk=1)
+    if type == LogEntry.LogEntryTypes.LOG and status.health_state == 'PEND':
+        status.health_state = 'GOOD'
+    if type == LogEntry.LogEntryTypes.ERR:
+        status.health_state = 'BAD'
+        status.play_state = 'STOP'
+    status.save()
 
 def get_new_session():
     session = requests.Session()
@@ -92,7 +101,7 @@ def scrape_assets(session: requests.Session, source: AssetSource):
             ))
         except TypeError:
             append_log(
-                source='get_json_assets',
+                source='scrape_assets',
                 type=LogEntry.LogEntryTypes.ERR,
                 text="An error occured while creating Asset from the following: "+title+", "+link+", "+description
             )
@@ -107,16 +116,8 @@ def persist_new_assets(assets: Sequence[Asset]):
             append_log(
                 source='persist_new_assets',
                 type=LogEntry.LogEntryTypes.LOG,
-                text='Article already exists: ' + asset.title
+                text='Asset already exists: ' + asset.title
             )
-            # if time.month < datetime.now().month or time.year < datetime.now().year:
-            #     table.update({'sent': False}, Query().title == asset['title'])
-            #     new_assets += 1
-            #     append_log(
-            #         source='persist_new_assets',
-            #         type=LogEntry.LogEntryTypes.LOG,
-            #         text='Updated ' + asset['title'] + 'to unsent'
-            #     )
         except Asset.DoesNotExist:
             asset.time_stamp = timezone.now()
             asset.sent = False
@@ -124,7 +125,7 @@ def persist_new_assets(assets: Sequence[Asset]):
             append_log(
                 source='persist_new_assets',
                 type=LogEntry.LogEntryTypes.LOG,
-                text='New article added: ' + asset.title
+                text='New asset added: ' + asset.title
             )
             new_assets += 1
 
@@ -137,7 +138,7 @@ def post_new_assets(title, debug=False):
     # prepare message for posting
     message = title + '\n\n' \
         + functools.reduce(
-            lambda a, b: {'message': a['message'] + b['title'] + '\n[' + b['description'] + ']\n' + b['link'] + '\n\n'}, 
+            lambda a, b: {'message': a['message'] + b.title + '\n[' + b.description + ']\n' + b.link + '\n\n'}, 
             assets, 
             {'message': ''}
         )['message']
@@ -147,20 +148,27 @@ def post_new_assets(title, debug=False):
     else:
         # load keys
         keys = json.load(open('keys.json'))
-        graph = facebook.GraphAPI(access_token=keys['api_key'], version='3.1')
+        try:
+            graph = facebook.GraphAPI(access_token=keys['api_key'], version='3.1')
 
-        api_request = graph.put_object(
-            parent_object=keys['page_key'],
-            connection_name='feed',
-            message=message
-        )
+            api_request = graph.put_object(
+                parent_object=keys['page_key'],
+                connection_name='feed',
+                message=message
+            )
 
-        if 'id' in api_request:
+            if 'id' in api_request:
+                append_log(
+                    source='post_new_assets',
+                    type=LogEntry.LogEntryTypes.LOG,
+                    text='Successfully posted on facebook!'
+                )
+                for asset in assets:
+                    asset.sent = True
+                    asset.save()
+        except facebook.GraphAPIError as e:
             append_log(
                 source='post_new_assets',
-                type=LogEntry.LogEntryTypes.LOG,
-                text='Successfully posted on facebook!'
+                type=LogEntry.LogEntryTypes.ERR,
+                text="facebook.GraphAPIError: " + e.__str__()
             )
-            for asset in assets:
-                asset.sent = True
-                asset.save()

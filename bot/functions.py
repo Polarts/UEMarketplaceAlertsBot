@@ -53,6 +53,8 @@ def get_new_session():
 
 def get_json_assets(session: requests.Session, source: AssetSource):
 
+    if source.is_discontinued: return []
+
     request = session.get(BASE_URL + source.url)
     response = json.loads(request.text)
 
@@ -60,12 +62,24 @@ def get_json_assets(session: requests.Session, source: AssetSource):
     asset_array = []
 
     try:
+        source.is_discontinued = response['data']['sellerProfile']['isDiscontinued']
+        source.save()
+        if (source.is_discontinued):
+            append_log(
+                source='get_json_assets',
+                type=LogEntry.LogEntryTypes.WARN,
+                text=f'Asset source {source.title} has been discontinued!'
+            )
+            return asset_array
+    except: pass
+
+    try:
         json_assets = response['data']['elements']
     except KeyError:
         append_log(
             source='get_json_assets',
             type=LogEntry.LogEntryTypes.ERR,
-            text=f'Failed to parse JSON from {source.title}, raw: {response}'
+            text=f'Failed to parse JSON[data][elements] from {source.title}, raw: {response}'
         )
         return asset_array
 

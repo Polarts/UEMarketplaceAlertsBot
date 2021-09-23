@@ -14,6 +14,7 @@ class AssetSource(models.Model):
     )
     post_title = models.CharField(max_length=200)
     url = models.CharField(max_length=1000)
+    is_discontinued = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.title} | {self.type}"

@@ -12,6 +12,25 @@ from .models import AppState, AssetSource, Asset, LogEntry
 
 BASE_URL = 'https://www.unrealengine.com'
 
+def seed_database():
+    AppState.objects.create(
+            play_state=AppState.PlayStates.PLAY,
+            health_state=AppState.HealthStates.PENDING
+        )
+    AssetSource.objects.create(
+        title='Free Monthly', 
+        type=AssetSource.SourceTypes.SCRAPE, 
+        post_title='New free monthly assets out now:',
+        url='/marketplace/en-US/assets?tag=4910'
+    )
+    AssetSource.objects.create(
+        title='Megascans',
+        type=AssetSource.SourceTypes.JSON,
+        post_title='New free megascans available:',
+        url='/marketplace/api/assets/seller/Quixel+Megascans?lang=en-US&start=0&count=20&sortBy=effectiveDate&sortDir=DESC&priceRange=[0,0]'
+    )
+
+
 def append_log(source, type, text):
     LogEntry(
         time_stamp=timezone.now(),

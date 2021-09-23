@@ -12,4 +12,4 @@ Defined and manages the database, monitors and controls the bot process.
 
 ### 2. The bot: a scheduled, repeating task
 
-Responsible for scraping, persisting and posting alerts of new assets on UE Marketplace.
+Responsible for scraping, persisting and posting alerts of new assets on UE Marketplace. 

@@ -56,8 +56,18 @@ def get_json_assets(session: requests.Session, source: AssetSource):
     request = session.get(BASE_URL + source.url)
     response = json.loads(request.text)
 
-    json_assets = response['data']['elements']
+    json_assets = None
     asset_array = []
+
+    try:
+        json_assets = response['data']['elements']
+    except KeyError:
+        append_log(
+            source='get_json_assets',
+            type=LogEntry.LogEntryTypes.ERR,
+            text=f'Failed to parse JSON from {source.title}, raw: {response}'
+        )
+        return asset_array
 
     for asset in json_assets:
         

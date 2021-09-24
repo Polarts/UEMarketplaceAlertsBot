@@ -1,0 +1,9 @@
+django
+gunicorn
+django-heroku
+APScheduler==3.0.0
+requests
+beautifulsoup4
+collective.soupstrainer
+facebook-sdk
+lxml

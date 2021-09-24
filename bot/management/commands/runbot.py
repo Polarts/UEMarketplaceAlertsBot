@@ -1,7 +1,6 @@
-from requests.sessions import session
-from bot.models import AppState, AssetSource, LogEntry
-from bot.functions import append_log, get_json_assets, get_new_session, scrape_assets, persist_new_assets, post_new_assets
-from django.core.management.base import BaseCommand, CommandError, CommandParser
+from django.core.management.base import BaseCommand, CommandParser
+from bot.models import AppState, AssetSource
+from bot.functions import append_log, get_json_assets, get_new_session, scrape_assets, persist_new_assets, post_new_assets, seed_database
 
 class Command(BaseCommand):
     help = 'Runs the bot once'
@@ -14,7 +13,11 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        status =  AppState.objects.get(pk=1)
+        status = None
+        try:
+            status = AppState.objects.get(pk=1)
+        except AppState.DoesNotExist:
+            seed_database()
         if status.play_state == 'PLAY':
             debug = options['debug']
             session = get_new_session()
@@ -34,5 +37,5 @@ class Command(BaseCommand):
                     if debug:
                         self.stdout.write(self.style.SUCCESS(result))
         else:
-            append_log('Command.handle', 0, 'But did not run because it\'s on STOP')
+            append_log('Command.handle', 0, 'Bot did not run because it\'s on STOP')
             self.stdout.write('Bot is on STOP!')

@@ -1,6 +1,6 @@
 import functools
 import json
-from os import stat
+import os
 from typing import Sequence
 import requests
 import facebook
@@ -11,6 +11,25 @@ from django.utils import timezone
 from .models import AppState, AssetSource, Asset, LogEntry
 
 BASE_URL = 'https://www.unrealengine.com'
+
+def seed_database():
+    AppState.objects.create(
+            play_state=AppState.PlayStates.PLAY,
+            health_state=AppState.HealthStates.PENDING
+        )
+    AssetSource.objects.create(
+        title='Free Monthly', 
+        type=AssetSource.SourceTypes.SCRAPE, 
+        post_title='New free monthly assets out now:',
+        url='/marketplace/en-US/assets?tag=4910'
+    )
+    AssetSource.objects.create(
+        title='Megascans',
+        type=AssetSource.SourceTypes.JSON,
+        post_title='New free megascans available:',
+        url='/marketplace/api/assets/seller/Quixel+Megascans?lang=en-US&start=0&count=20&sortBy=effectiveDate&sortDir=DESC&priceRange=[0,0]'
+    )
+
 
 def append_log(source, type, text):
     LogEntry(
@@ -34,11 +53,35 @@ def get_new_session():
 
 def get_json_assets(session: requests.Session, source: AssetSource):
 
+    if source.is_discontinued: return []
+
     request = session.get(BASE_URL + source.url)
     response = json.loads(request.text)
 
-    json_assets = response['data']['elements']
+    json_assets = None
     asset_array = []
+
+    try:
+        source.is_discontinued = response['data']['sellerProfile']['isDiscontinued']
+        source.save()
+        if (source.is_discontinued):
+            append_log(
+                source='get_json_assets',
+                type=LogEntry.LogEntryTypes.WARN,
+                text=f'Asset source {source.title} has been discontinued!'
+            )
+            return asset_array
+    except: pass
+
+    try:
+        json_assets = response['data']['elements']
+    except KeyError:
+        append_log(
+            source='get_json_assets',
+            type=LogEntry.LogEntryTypes.ERR,
+            text=f'Failed to parse JSON[data][elements] from {source.title}, raw: {response}'
+        )
+        return asset_array
 
     for asset in json_assets:
         
@@ -146,13 +189,13 @@ def post_new_assets(title, debug=False):
     if debug:
         return message
     else:
-        # load keys
-        keys = json.load(open('keys.json'))
+        fb_key = os.environ['FB_API_KEY']
+        page_id = os.environ['PAGE_KEY']
         try:
-            graph = facebook.GraphAPI(access_token=keys['api_key'], version='3.1')
+            graph = facebook.GraphAPI(access_token=fb_key, version='3.1')
 
             api_request = graph.put_object(
-                parent_object=keys['page_key'],
+                parent_object=page_id,
                 connection_name='feed',
                 message=message
             )

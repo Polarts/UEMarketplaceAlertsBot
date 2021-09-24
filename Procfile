@@ -1,2 +1,2 @@
-web: gunicorn gettingstarted.wsgi
+web: gunicorn AdminPanel.wsgi
 clock: python scheduler.py

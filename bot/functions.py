@@ -1,6 +1,6 @@
 import functools
 import json
-from os import stat
+import os
 from typing import Sequence
 import requests
 import facebook
@@ -189,13 +189,13 @@ def post_new_assets(title, debug=False):
     if debug:
         return message
     else:
-        # load keys
-        keys = json.load(open('keys.json'))
+        fb_key = os.environ['FB_API_KEY']
+        page_id = os.environ['PAGE_KEY']
         try:
-            graph = facebook.GraphAPI(access_token=keys['api_key'], version='3.1')
+            graph = facebook.GraphAPI(access_token=fb_key, version='3.1')
 
             api_request = graph.put_object(
-                parent_object=keys['page_key'],
+                parent_object=page_id,
                 connection_name='feed',
                 message=message
             )

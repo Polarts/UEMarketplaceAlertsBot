@@ -3,8 +3,8 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 
 sched = BlockingScheduler()
 
-@sched.scheduled_job('interval', seconds=10)
-def timed_job():
-    os.system("python manage.py runbot --debug")
+@sched.scheduled_job('cron', hour=9)
+def scheduled_job():
+    os.system("python manage.py runbot")
 
 sched.start()

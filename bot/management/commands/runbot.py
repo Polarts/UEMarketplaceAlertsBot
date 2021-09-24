@@ -1,6 +1,6 @@
+from django.core.management.base import BaseCommand, CommandParser
 from bot.models import AppState, AssetSource
 from bot.functions import append_log, get_json_assets, get_new_session, scrape_assets, persist_new_assets, post_new_assets, seed_database
-from django.core.management.base import BaseCommand, CommandParser
 
 class Command(BaseCommand):
     help = 'Runs the bot once'

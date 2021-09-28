@@ -190,9 +190,9 @@ def post_new_assets(title, debug=False):
     if debug:
         return message
     else:
-        fb_key = os.environ['FB_API_KEY']
-        page_id = os.environ['PAGE_ID']
         try:
+            fb_key = os.environ['FB_API_KEY']
+            page_id = os.environ['PAGE_ID']
             graph = facebook.GraphAPI(access_token=fb_key, version='3.1')
 
             api_request = graph.put_object(
@@ -215,6 +215,12 @@ def post_new_assets(title, debug=False):
                 source='post_new_assets',
                 type=LogEntry.LogEntryTypes.ERR,
                 text="facebook.GraphAPIError: " + e.__str__()
+            )
+        except KeyError as e:
+            append_log(
+                source='post_new_assets',
+                type=LogEntry.LogEntryTypes.ERR,
+                text="KeyError: " + e.__str__()
             )
 
 def run_bot(status, debug=False):

@@ -1,9 +1,20 @@
+from datetime import datetime
+from bot.functions import run_bot, seed_database
 from bot.models import AppState, LogEntry
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import render
 
 def index(request):
-    status = get_object_or_404(AppState, pk=1)
+    status = None
+    try:
+        status = AppState.objects.get(pk=1)
+        native_date = status.last_run.replace(tzinfo=None)
+        date_diff = datetime.now() - native_date
+        if (date_diff.days >= 1):
+            run_bot(status)
+    except AppState.DoesNotExist:
+        seed_database()
+        run_bot()
     return render(request, 'bot/index.html', {'status': status})
 
 def logs(request):

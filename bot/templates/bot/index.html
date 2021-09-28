@@ -1,7 +1,7 @@
 {% load static %}
 <head>
-
     <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <title>UE Marketplace Alerts Bot</title>
 </head>
 <body>
     <header>
@@ -13,6 +13,8 @@
     <main>
         <div class="bot-status">
             Bot health: {{ status.health_state }}
+            <br>
+            Last run: {{ status.last_run }}
         </div>
     </main>
 </body>

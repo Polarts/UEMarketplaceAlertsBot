@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db import models
 
 class AssetSource(models.Model):
@@ -52,6 +53,7 @@ class AppState(models.Model):
         choices=HealthStates.choices,
         default=HealthStates.PENDING
     )
+    last_run=models.DateTimeField(default=datetime.now)
 
     def to_dict(self):
         return {

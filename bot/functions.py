@@ -15,8 +15,9 @@ BASE_URL = 'https://www.unrealengine.com'
 def seed_database():
     AppState.objects.create(
             play_state=AppState.PlayStates.PLAY,
-            health_state=AppState.HealthStates.PENDING
-        )
+            health_state=AppState.HealthStates.PENDING,
+            last_posted=timezone.now()
+    )
     AssetSource.objects.create(
         title='Free Monthly', 
         type=AssetSource.SourceTypes.SCRAPE, 
@@ -215,3 +216,29 @@ def post_new_assets(title, debug=False):
                 type=LogEntry.LogEntryTypes.ERR,
                 text="facebook.GraphAPIError: " + e.__str__()
             )
+
+def run_bot(status, debug=False):
+    if status.play_state == 'PLAY':
+        
+        status.last_run = datetime.now()
+        status.save()
+
+        session = get_new_session()
+        sources = AssetSource.objects.all()
+
+        for source in sources:
+            assets = []
+            if (source.type == AssetSource.SourceTypes.SCRAPE):
+                assets = scrape_assets(session, source)
+            else:
+                assets = get_json_assets(session, source)
+
+            new_assets = persist_new_assets(assets)
+            
+            if new_assets > 0:
+                result = post_new_assets(source.post_title, debug)
+                if debug:
+                    return result
+    else:
+        append_log('Command.handle', 0, 'Bot did not run because it\'s on STOP')
+        return 'Bot is on STOP!'

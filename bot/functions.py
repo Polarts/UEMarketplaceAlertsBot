@@ -222,6 +222,7 @@ def run_bot(status, debug=False):
         
         status.last_run = datetime.now()
         status.save()
+        append_log('run_bot', 0, f'Running bot at {status.last_run}')
 
         session = get_new_session()
         sources = AssetSource.objects.all()
@@ -240,5 +241,5 @@ def run_bot(status, debug=False):
                 if debug:
                     return result
     else:
-        append_log('Command.handle', 0, 'Bot did not run because it\'s on STOP')
+        append_log('run_bot', 0, 'Bot did not run because it\'s on STOP')
         return 'Bot is on STOP!'

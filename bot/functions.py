@@ -235,6 +235,7 @@ def run_bot(status, debug=False):
                 assets = get_json_assets(session, source)
 
             new_assets = persist_new_assets(assets)
+            append_log('run_bot', 0, f'There are {new_assets} new assets')
             
             if new_assets > 0:
                 result = post_new_assets(source.post_title, debug)

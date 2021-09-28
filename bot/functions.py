@@ -162,6 +162,8 @@ def persist_new_assets(assets: Sequence[Asset]):
                 type=LogEntry.LogEntryTypes.LOG,
                 text='Asset already exists: ' + asset.title
             )
+            if not existing_asset.sent:
+                new_assets += 1
         except Asset.DoesNotExist:
             asset.time_stamp = timezone.now()
             asset.sent = False
@@ -172,7 +174,7 @@ def persist_new_assets(assets: Sequence[Asset]):
                 text='New asset added: ' + asset.title
             )
             new_assets += 1
-
+    
     return new_assets
 
 def post_new_assets(title, debug=False):

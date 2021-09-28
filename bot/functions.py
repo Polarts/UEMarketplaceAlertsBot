@@ -191,7 +191,7 @@ def post_new_assets(title, debug=False):
         return message
     else:
         fb_key = os.environ['FB_API_KEY']
-        page_id = os.environ['PAGE_KEY']
+        page_id = os.environ['PAGE_ID']
         try:
             graph = facebook.GraphAPI(access_token=fb_key, version='3.1')
 

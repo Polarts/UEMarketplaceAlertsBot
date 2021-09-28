@@ -1,5 +1,10 @@
 from bot.models import AppState, LogEntry
 from django.http import JsonResponse, HttpResponse
+from django.shortcuts import get_object_or_404, render
+
+def index(request):
+    status = get_object_or_404(AppState, pk=1)
+    return render(request, 'bot/index.html', {'status': status})
 
 def logs(request):
     if (request.user.is_superuser):

@@ -3,7 +3,7 @@
         {
             "format": "expanded",
             "extensionName": ".css",
-            "savePath": "/static/AdminPanel/admin/css/custom"
+            "savePath": "~/../css"
         }
     ],
     "liveSassCompile.settings.generateMap": false

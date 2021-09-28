@@ -1,0 +1,36 @@
+@font-face {
+    font-family: 'UT';
+    src: url('../fonts/UnrealT.ttf');
+}
+
+html {
+    color: white;
+    background-color: black;
+    font-family: sans-serif;
+}
+
+body {
+    margin: 0; padding: 0;
+}
+
+header {
+    h1 {
+        display: flex; justify-content: flex-start; align-items: center;
+        width: 100vw; padding: 5px;
+        background-color: #202337;
+        span{
+            &:first-of-type {
+                font-family: 'UT';
+                margin: 5px 15px;
+                font-weight: normal;
+            }   
+            &:last-of-type {
+                margin-top: 8px;
+            }
+        }
+    }
+}
+
+main {
+    margin: 15px;
+}
